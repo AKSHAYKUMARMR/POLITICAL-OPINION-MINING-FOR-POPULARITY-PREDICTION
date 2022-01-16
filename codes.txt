@@ -1,0 +1,68 @@
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import datetime as dt
+
+import plotly.graph_objects as go
+import plotly.io as pio
+import plotly.express as px
+
+
+
+
+block 2
+
+
+president_counties_df = pd.read_csv('../input/us-election-2020/president_county_candidate.csv')
+
+total_votes_df = president_counties_df.groupby('candidate')['total_votes'].sum().reset_index().sort_values(by='total_votes',ascending=False)
+
+
+
+block 3
+df = total_votes_df.sort_values(by='total_votes')
+
+fig1 = px.bar(df, x='total_votes', y='candidate', orientation='h')
+
+fig1.update_layout(template='simple_white', height=800)
+fig1.show()
+
+
+
+
+block 4
+
+
+
+df = total_votes_df.sort_values(by='total_votes')
+
+df['text'] = df.apply(lambda x: x['candidate'] + ' ' + "{:,}".format(x['total_votes']), axis=1)
+
+fig1 = px.scatter(df, x='total_votes', y='candidate',log_x=True, text='text')
+
+fig1.update_traces(textposition='middle right')
+
+fig1.update_layout(template='simple_white', height=800, yaxis = dict(showticklabels = False))
+fig1.show()
+
+
+
+block 5
+filt = (president_counties_df['won'] == True)# & (president_counties_df['candidate'].isin(['Joe Biden','Donald Trump']))
+
+counties_won_df = president_counties_df.loc[filt]
+
+counties_won_df.groupby('candidate')['county'].count().reset_index()
+
+
+
+
+block 6
+len(president_counties_df.groupby(['state','county']).count())
+
+
+
+block 7
+president_counties_pivot = president_counties_df[president_counties_df['candidate'].isin(['Joe Biden','Donald Trump'])].pivot_table(index=['state','county'],columns='candidate',values='total_votes', aggfunc='sum')
+
+
+block 8
